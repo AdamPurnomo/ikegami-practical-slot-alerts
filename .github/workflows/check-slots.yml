@@ -1,0 +1,43 @@
+name: Check Ikegami practical slots
+
+on:
+  schedule:
+    # 08:17, 12:17, 16:17, 21:17 in Japan (UTC+9).
+    - cron: '17 23,3,7,12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ikegami-slot-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Read calendar and alert
+        run: npm run check
+        env:
+          ELICENSE_STUDENT_ID: ${{ secrets.ELICENSE_STUDENT_ID }}
+          ELICENSE_PASSWORD: ${{ secrets.ELICENSE_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Save alert state
+        if: always()
+        run: |
+          if ! git diff --quiet -- state/check-state.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add state/check-state.json
+            git commit -m 'Update Ikegami slot monitor state'
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi

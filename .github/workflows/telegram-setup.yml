@@ -1,0 +1,19 @@
+name: Find Telegram chat ID
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  find-chat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node src/show-chat-id.mjs
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

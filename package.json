@@ -1,0 +1,16 @@
+{
+  "name": "ikg-slot-monitor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node src/check.mjs",
+    "show-chat-id": "node src/show-chat-id.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "playwright": "1.63.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
