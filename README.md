@@ -26,7 +26,7 @@ GitHub's scheduled workflows can start late or occasionally be dropped under loa
 
 4. Open **Actions → Find Telegram chat ID → Run workflow**. In that run's log, copy your private chat ID. Add it as a fourth repository secret named `TELEGRAM_CHAT_ID`. If the log says there are no private chats, send `/start` to your bot and rerun it.
 5. Open **Actions → Check Ikegami practical slots → Run workflow** once. The first successful run will send all currently visible green slots after the simulator. Check that the Telegram message arrived and that your e-license Chrome session still works.
-6. Leave the workflow enabled. It is scheduled for **08:17, 12:17, 16:17, and 21:17 JST**. GitHub runs the times in UTC; Japan has no daylight saving time. Use **Actions → Check Ikegami practical slots → Disable workflow** to stop it.
+6. Leave the workflow enabled. It is scheduled for **08:17, 10:17, 12:17, 14:17, 16:17, 18:17, 20:17, 22:17, and 23:17 JST**. GitHub runs the times in UTC; Japan has no daylight saving time. Use **Actions → Check Ikegami practical slots → Disable workflow** to stop it.
 
 GitHub stores the four credentials as encrypted Actions secrets. The workflow gives its GitHub token permission only to update the slot-state file. Do not post your password or bot token in a chat, issue, commit, or workflow log. If you later change the e-license password or rotate the Telegram token, update the matching repository secret.
 
