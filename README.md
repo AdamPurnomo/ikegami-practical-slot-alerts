@@ -2,6 +2,8 @@
 
 This checker runs in GitHub Actions, signs in to Ikegami's e-license reservation system, reads green **AT on-site practical** cells, and sends newly open times to your Telegram bot. It never selects a slot, books, cancels, or changes a reservation.
 
+Alerts link to Ikegami's e-license login page. After signing in, open **予約 → 技能予約** to see the reported slots.
+
 It reports every green slot later than the already booked simulator lesson on **2026-10-10 at 15:00 JST**. The e-license site still decides whether you can book a particular slot; a green cell alone does not guarantee eligibility. The script records only the currently open dates and times in `state/check-state.json`, so an unchanged slot is not sent repeatedly. A slot that disappears and later reappears is sent again.
 
 ## Before deploying

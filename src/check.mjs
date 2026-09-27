@@ -7,7 +7,7 @@ import { normalizeSlots, newlyAvailable, telegramMessages } from './slots.mjs';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const STATE_PATH = resolve(ROOT, 'state/check-state.json');
 const LOGIN_URL = 'https://www.e-license.jp/el32/mSg1DWxRvAI-brGQYS-1OA%3D%3D';
-const CALENDAR_URL = 'https://www.e-license.jp/el32/pc/reserv/p03/p03a';
+const ALERT_LINK_VERSION = 2;
 
 class MonitorError extends Error {
   constructor(code, message) {
@@ -25,9 +25,13 @@ function required(name) {
 async function readState() {
   try {
     const state = JSON.parse(await readFile(STATE_PATH, 'utf8'));
-    return { available: Array.isArray(state.available) ? state.available : [], error: state.error ?? null };
+    return {
+      available: Array.isArray(state.available) ? state.available : [],
+      error: state.error ?? null,
+      alertLinkVersion: state.alertLinkVersion ?? 1
+    };
   } catch (error) {
-    if (error.code === 'ENOENT') return { available: [], error: null };
+    if (error.code === 'ENOENT') return { available: [], error: null, alertLinkVersion: 1 };
     throw new MonitorError('state', 'Unable to read monitor state.');
   }
 }
@@ -119,11 +123,13 @@ async function main() {
     const page = await browser.newPage({ locale: 'ja-JP', timezoneId: 'Asia/Tokyo' });
     await openCalendar(page, studentId, password);
     const available = await collectSlots(page);
-    const fresh = newlyAvailable(previous.available, available);
-    for (const message of telegramMessages(fresh, CALENDAR_URL)) {
+    const fresh = previous.alertLinkVersion < ALERT_LINK_VERSION
+      ? available
+      : newlyAvailable(previous.available, available);
+    for (const message of telegramMessages(fresh, LOGIN_URL)) {
       await sendTelegram(botToken, chatId, message);
     }
-    await saveState({ available, error: null });
+    await saveState({ available, error: null, alertLinkVersion: ALERT_LINK_VERSION });
     console.log(`Checked ${available.length} available slots; reported ${fresh.length} new slots.`);
   } catch (error) {
     const code = error instanceof MonitorError ? error.code : 'unexpected';

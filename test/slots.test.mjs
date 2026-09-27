@@ -24,9 +24,9 @@ test('reports newly appearing and reappearing slots without repeating unchanged 
   assert.deepEqual(newlyAvailable([], [monday]), [monday]);
 });
 
-test('alerts include a booking link and no account details', () => {
-  const messages = telegramMessages([{ date: '20261026', time: '15:00' }], 'https://example.test/calendar');
+test('alerts include a login link and no account details', () => {
+  const messages = telegramMessages([{ date: '20261026', time: '15:00' }], 'https://example.test/login');
   assert.equal(messages.length, 1);
   assert.match(messages[0], /2026-10-26 15:00 JST/);
-  assert.match(messages[0], /https:\/\/example\.test\/calendar/);
+  assert.match(messages[0], /Log in here: https:\/\/example\.test\/login/);
 });

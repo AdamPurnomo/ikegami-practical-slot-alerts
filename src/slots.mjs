@@ -27,9 +27,9 @@ export function formatSlot(slot) {
   return `${slot.date.slice(0, 4)}-${slot.date.slice(4, 6)}-${slot.date.slice(6, 8)} ${slot.time} JST`;
 }
 
-export function telegramMessages(slots, calendarUrl) {
+export function telegramMessages(slots, loginUrl) {
   const header = 'Ikegami practical lesson openings:\n';
-  const footer = `\n${calendarUrl}\nCheck lesson order and eligibility before booking.`;
+  const footer = `\nLog in here: ${loginUrl}\nCheck lesson order and eligibility before booking.`;
   const messages = [];
   let lines = [];
   for (const slot of slots) {
