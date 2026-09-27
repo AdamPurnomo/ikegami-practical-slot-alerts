@@ -1,18 +1,5 @@
 {
-  "available": [
-    {
-      "date": "20261027",
-      "time": "09:00"
-    },
-    {
-      "date": "20261027",
-      "time": "14:00"
-    },
-    {
-      "date": "20261027",
-      "time": "17:00"
-    }
-  ],
+  "available": [],
   "error": null,
   "alertLinkVersion": 2
 }
