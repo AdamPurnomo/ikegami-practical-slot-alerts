@@ -15,15 +15,20 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: npm install --no-audit --no-fund
-      - run: npx playwright install --with-deps chromium
+      - uses: actions/cache@v4
+        id: dependencies
+        with:
+          path: node_modules
+          key: npm-${{ runner.os }}-${{ runner.arch }}-node24-${{ hashFiles('package.json') }}
+      - if: steps.dependencies.outputs.cache-hit != 'true'
+        run: npm install --no-audit --no-fund
       - name: Read calendar and alert
         run: npm run check
         env:
@@ -31,6 +36,7 @@ jobs:
           ELICENSE_PASSWORD: ${{ secrets.ELICENSE_PASSWORD }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEND_MANUAL_STATUS: ${{ github.event_name == 'workflow_dispatch' }}
       - name: Save alert state
         if: always()
         run: |

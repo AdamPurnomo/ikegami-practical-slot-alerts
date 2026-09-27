@@ -28,8 +28,16 @@ export function formatSlot(slot) {
 }
 
 export function telegramMessages(slots, loginUrl) {
-  const header = 'Ikegami practical lesson openings:\n';
+  return formatMessages(slots, loginUrl, 'Ikegami practical lesson openings:\n');
+}
+
+export function manualStatusMessages(slots, loginUrl) {
+  return formatMessages(slots, loginUrl, 'Ikegami manual check — current practical lesson openings:\n', true);
+}
+
+function formatMessages(slots, loginUrl, header, showEmpty = false) {
   const footer = `\nLog in here: ${loginUrl}\nCheck lesson order and eligibility before booking.`;
+  if (showEmpty && slots.length === 0) return [header + 'None at this check.' + footer];
   const messages = [];
   let lines = [];
   for (const slot of slots) {

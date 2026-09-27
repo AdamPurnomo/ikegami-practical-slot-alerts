@@ -1,6 +1,6 @@
 # Ikegami practical lesson slot alerts
 
-This checker runs in GitHub Actions, signs in to Ikegami's e-license reservation system, reads green **AT on-site practical** cells, and sends newly open times to your Telegram bot. It never selects a slot, books, cancels, or changes a reservation.
+This checker runs in GitHub Actions, signs in to Ikegami's e-license reservation system, reads green **AT on-site practical** cells, and sends newly open times to your Telegram bot. It uses Chrome preinstalled on GitHub's Ubuntu 24.04 runner and caches the Playwright package, so unchanged runs skip both installs. It never selects a slot, books, cancels, or changes a reservation.
 
 Alerts link to Ikegami's e-license login page. After signing in, open **予約 → 技能予約** to see the reported slots.
 
@@ -28,11 +28,13 @@ GitHub's scheduled workflows can start late or occasionally be dropped under loa
 5. Open **Actions → Check Ikegami practical slots → Run workflow** once. The first successful run will send all currently visible green slots after the simulator. Check that the Telegram message arrived and that your e-license Chrome session still works.
 6. Leave the workflow enabled. It is scheduled for **08:17, 10:17, 12:17, 14:17, 16:17, 18:17, 20:17, 22:17, and 23:17 JST**. GitHub runs the times in UTC; Japan has no daylight saving time. Use **Actions → Check Ikegami practical slots → Disable workflow** to stop it.
 
+Every **Run workflow** manual check sends a Telegram status message listing all currently open slots, even when there are none or no openings are new. Scheduled checks stay quiet until a new slot appears. A failed manual check sends an error message when Telegram itself is reachable.
+
 GitHub stores the four credentials as encrypted Actions secrets. The workflow gives its GitHub token permission only to update the slot-state file. Do not post your password or bot token in a chat, issue, commit, or workflow log. If you later change the e-license password or rotate the Telegram token, update the matching repository secret.
 
 ## Local checks
 
-With Node.js 24 installed, run `npm install` and `npm test`. `npm run check` requires all four secrets as environment variables and signs in to the live site; it will send Telegram alerts. The tests do not sign in or send messages.
+With Node.js 24 and Google Chrome installed, run `npm install` and `npm test`. `npm run check` requires all four secrets as environment variables and signs in to the live site; it will send Telegram alerts. The tests do not sign in or send messages.
 
 ## Source behavior
 

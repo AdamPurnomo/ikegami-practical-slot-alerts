@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { normalizeSlots, newlyAvailable, telegramMessages } from './slots.mjs';
+import { normalizeSlots, newlyAvailable, telegramMessages, manualStatusMessages } from './slots.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const STATE_PATH = resolve(ROOT, 'state/check-state.json');
@@ -119,22 +119,26 @@ async function main() {
   const previous = await readState();
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await chromium.launch({ headless: true, channel: 'chrome' });
     const page = await browser.newPage({ locale: 'ja-JP', timezoneId: 'Asia/Tokyo' });
     await openCalendar(page, studentId, password);
     const available = await collectSlots(page);
     const fresh = previous.alertLinkVersion < ALERT_LINK_VERSION
       ? available
       : newlyAvailable(previous.available, available);
-    for (const message of telegramMessages(fresh, LOGIN_URL)) {
+    const manual = process.env.SEND_MANUAL_STATUS === 'true';
+    const messages = manual
+      ? manualStatusMessages(available, LOGIN_URL)
+      : telegramMessages(fresh, LOGIN_URL);
+    for (const message of messages) {
       await sendTelegram(botToken, chatId, message);
     }
     await saveState({ available, error: null, alertLinkVersion: ALERT_LINK_VERSION });
-    console.log(`Checked ${available.length} available slots; reported ${fresh.length} new slots.`);
+    console.log(`Checked ${available.length} available slots; found ${fresh.length} new slots; sent ${messages.length} message(s).`);
   } catch (error) {
     const code = error instanceof MonitorError ? error.code : 'unexpected';
     const message = error instanceof MonitorError ? error.message : 'The checker failed unexpectedly.';
-    if (previous.error !== code && code !== 'telegram') {
+    if ((process.env.SEND_MANUAL_STATUS === 'true' || previous.error !== code) && code !== 'telegram') {
       try {
         await sendTelegram(botToken, chatId, `Ikegami checker needs attention: ${message}`);
       } catch {

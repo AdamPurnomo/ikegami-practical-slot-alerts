@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeSlots, newlyAvailable, telegramMessages } from '../src/slots.mjs';
+import { normalizeSlots, newlyAvailable, telegramMessages, manualStatusMessages } from '../src/slots.mjs';
 
 test('keeps only valid slots after the simulator and removes duplicates', () => {
   assert.deepEqual(normalizeSlots([
@@ -29,4 +29,15 @@ test('alerts include a login link and no account details', () => {
   assert.equal(messages.length, 1);
   assert.match(messages[0], /2026-10-26 15:00 JST/);
   assert.match(messages[0], /Log in here: https:\/\/example\.test\/login/);
+});
+
+test('manual checks report current availability even when unchanged or empty', () => {
+  const login = 'https://example.test/login';
+  const open = manualStatusMessages([{ date: '20261027', time: '09:00' }], login);
+  assert.equal(open.length, 1);
+  assert.match(open[0], /manual check/);
+  assert.match(open[0], /2026-10-27 09:00 JST/);
+  const empty = manualStatusMessages([], login);
+  assert.equal(empty.length, 1);
+  assert.match(empty[0], /None at this check/);
 });
