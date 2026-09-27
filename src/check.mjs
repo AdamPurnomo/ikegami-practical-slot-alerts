@@ -86,18 +86,18 @@ async function collectSlots(page) {
   const raw = [];
   const visitedHeadings = new Set();
   for (let week = 0; week < 8; week++) {
-    const heading = (await page.locator('.ginou-title').innerText()).trim();
+    const heading = (await page.locator('#ginou-title').innerText()).trim();
     if (visitedHeadings.has(heading)) break;
     visitedHeadings.add(heading);
     raw.push(...await page.locator('td.status1 a.simei[data-yoyaku][data-time]').evaluateAll(elements =>
       elements.map(element => ({ date: element.dataset.yoyaku, time: element.dataset.time }))
     ));
     const next = page.getByRole('button', { name: /次週へ/ }).first();
-    if (await next.count() === 0) break;
+    if (await next.count() === 0 || !await next.isEnabled()) break;
     await next.click();
     try {
       await page.waitForFunction(previous =>
-        document.querySelector('.ginou-title')?.textContent?.trim() !== previous,
+        document.querySelector('#ginou-title')?.textContent?.trim() !== previous,
       heading, { timeout: 15000 });
     } catch {
       throw new MonitorError('navigation', 'The calendar did not advance to the next week.');
