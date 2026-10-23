@@ -1,5 +1,14 @@
 {
-  "available": [],
+  "available": [
+    {
+      "date": "20261111",
+      "time": "20:00"
+    },
+    {
+      "date": "20261112",
+      "time": "20:00"
+    }
+  ],
   "error": null,
   "alertLinkVersion": 2
 }
