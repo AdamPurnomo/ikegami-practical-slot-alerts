@@ -1,10 +1,5 @@
 {
-  "available": [
-    {
-      "date": "20261026",
-      "time": "12:00"
-    }
-  ],
+  "available": [],
   "error": null,
   "alertLinkVersion": 2
 }
