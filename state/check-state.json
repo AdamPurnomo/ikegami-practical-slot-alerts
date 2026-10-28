@@ -1,22 +1,5 @@
 {
-  "available": [
-    {
-      "date": "20261127",
-      "time": "09:00"
-    },
-    {
-      "date": "20261127",
-      "time": "12:00"
-    },
-    {
-      "date": "20261127",
-      "time": "18:00"
-    },
-    {
-      "date": "20261127",
-      "time": "19:00"
-    }
-  ],
+  "available": [],
   "error": null,
   "alertLinkVersion": 2
 }
